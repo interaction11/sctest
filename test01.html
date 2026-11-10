@@ -227,7 +227,6 @@ function BuyProduct() {
   
   console.log('sensors.getAppStatus()====',sensors.getAppStatus())
 
-	(function () {
   // 1. 获取插件实例
   var dp = window.sensorsDataAnalytic201505.modules.Deeplink;
 
@@ -262,8 +261,6 @@ function BuyProduct() {
   console.log("即将执行原版 openDeepLink，当前环境识别的系统为:", dp.$.getOS ? dp.$.getOS() : "未知");
   
   dp.openDeepLink();
-})();
-
 
 	
 }
