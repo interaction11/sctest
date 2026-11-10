@@ -32,6 +32,12 @@
        <br><br>
       <a href="sensordeplink://sensorsdata/sd/FcB/eGgumf">打开鸿蒙App02，Scheme形式</a>
 
+	<!-- 在页面的任意位置放置一个按钮用于测试 -->
+	<br><br>
+<button id="testDeepLinkBtn" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+  模拟唤起 App
+</button>
+
 
 
 
@@ -227,41 +233,6 @@ function BuyProduct() {
   
   console.log('sensors.getAppStatus()====',sensors.getAppStatus())
 
-  // 1. 获取插件实例
-  var dp = window.sensorsDataAnalytic201505.modules.Deeplink;
-
-  // 2. 【关键】将插件原本的 logger 重定向到 console.log，以便直接在控制台看到原始日志
-  dp.logger = function (msg) {
-    console.log("[SensorsDeepLink]", msg);
-  };
-
-  // 3. 构造完整的数据（结合你截图中的 harmony_info，并补全 android 和 ios，防止切换环境报错）
-  dp.data = {
-    "errorMsg": "",
-    "app_key": "FcB",
-    "android_info": {
-      "url_schemes": "sensordeplink",
-      "download_url": "https://appgallery.huawei.com/app/detail?id=com.sdgs.easy.high.speed.hmapp"
-    },
-    "ios_info": {
-      "url_schemes": "sensordeplink",
-      "download_url": "https://apps.apple.com/cn/app/id000000000"
-    },
-    "harmony_info": {
-      "app_linking_url": "https://cdpdata.xlkeji.net/sd/FcB/w/eGgumf",
-      "url_schemes": "sensordeplink",
-      "download_url": "https://appgallery.huawei.com/app/detail?id=com.sdgs.easy.high.speed.hmapp&channelId=SHARE&source=appshare"
-    }
-  };
-
-  // 4. 设置超时时间（默认 2500ms）
-  dp.timeout = 2500;
-
-  // 5. 直接调用原版方法（未做任何重写）
-  console.log("即将执行原版 openDeepLink，当前环境识别的系统为:", dp.$.getOS ? dp.$.getOS() : "未知");
-  
-  dp.openDeepLink();
-
 	
 }
 
@@ -271,6 +242,74 @@ function login() {
   sensors.login(inputText)
  
 }
+
+	(function () {
+  // 确保 DOM 加载完成后再绑定事件
+  function bindDeepLinkEvent() {
+    var btn = document.getElementById('testDeepLinkBtn');
+    if (!btn) return;
+
+    btn.addEventListener('click', function () {
+      // 1. 获取神策 SDK 实例
+      var sd = window.sensorsDataAnalytic201505;
+      if (!sd) {
+        console.error('未找到神策 SDK (sensorsDataAnalytic201505)');
+        return;
+      }
+
+      // 2. 获取 DeepLink 插件实例 (源码中插件名为 'Deeplink')
+      var dp = sd.modules && sd.modules.Deeplink;
+      if (!dp) {
+        console.error('未找到 DeepLink 插件，请检查 SDK 是否已初始化且包含该插件');
+        return;
+      }
+
+      // 3. 重定向 logger，让你能在控制台清晰看到原版的日志打印
+      dp.logger = function (msg) {
+        console.log('[SensorsDeepLink 日志]', msg);
+      };
+
+      // 4. 注入截图中的完整 Data 数据
+      // 补全 android_info 和 ios_info 是为了防止在非鸿蒙环境下测试时源码报错
+      dp.data = {
+        "errorMsg": "",
+        "app_key": "FcB",
+        "android_info": {
+          "url_schemes": "sensordeplink",
+          "download_url": "https://appgallery.huawei.com/app/detail?id=com.sdgs.easy.high.speed.hmapp"
+        },
+        "ios_info": {
+          "url_schemes": "sensordeplink",
+          "download_url": "https://apps.apple.com/cn/app/id000000000"
+        },
+        "harmony_info": {
+          "app_linking_url": "https://cdpdata.xlkeji.net/sd/FcB/w/eGgumf",
+          "url_schemes": "sensordeplink",
+          "download_url": "https://appgallery.huawei.com/app/detail?id=com.sdgs.easy.high.speed.hmapp&channelId=SHARE&source=appshare"
+        }
+      };
+
+      // 5. 设置超时时间（源码默认 2500ms）
+      dp.timeout = 2500;
+
+      console.log('--- 开始执行原生 openDeepLink ---');
+      
+      // 6. 调用原版方法，由于是真实点击事件，不会被浏览器拦截
+      try {
+        dp.openDeepLink();
+      } catch (e) {
+        console.error('openDeepLink 执行异常:', e);
+      }
+    });
+  }
+
+  // 根据页面加载状态决定何时绑定事件
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindDeepLinkEvent);
+  } else {
+    bindDeepLinkEvent();
+  }
+})();
 
 </script>
 </html>
