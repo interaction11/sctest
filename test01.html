@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>siemens_test</title>
+</head>
+<body>
+    <t>测试002</t>
+  </div>
+  <br><br>
+  <button onclick="BuyProduct()" data="test">触发BuyProduct</button>
+   <input id="01"  type="text" />
+   <button onclick="login()">登陆login</button>
+    <!-- <a href="zpm://sensorsdata/slink/applinkpath/WCo">打开app</a>
+    <br><br>
+      <a href="sdjandroiddeeplink://sensorsdata/sd/kBj/a27DhO">打开app</a>
+      <br><br>
+      <a href="sa169baa87://sensorsdata/sd/GSA">打开app02</a>
+      <br><br>
+      <a href="sa97b67518://sensorsdata/sd/GSA">打开App03</a>
+
+      <br><br>
+      <a href="https://bi.cdfhnms.com/r/nhs">打开中免App03</a>
+
+      <br><br>
+      <a href="https://bi.cdfhnms.com/r/qhs">打开中免App03</a> -->
+
+       <br><br>
+      <a href="https://cdpdata.xlkeji.net/sd/FcB/w/eGgumf">打开鸿蒙App01，app_linking_url形式</a>
+
+       <br><br>
+      <a href="sensordeplink://sensorsdata/sd/FcB/eGgumf">打开鸿蒙App02，Scheme形式</a>
+
+
+
+
+  <ul>
+    <li id="1">1</li>
+    <li id="2">2</li>
+  </ul>
+  <input id="3" type="text" />
+
+<p><a id="theBtn" href='#'>Open the App</a></p>
+
+  <!-- <iframe 
+  src="https://jssdk.debugbox.sensorsdata.cn/js/zhangyi/test01.html" 
+  width="300" 
+  height="500"
+  title="示例"
+></iframe> -->
+
+</body>
+<!-- <script src="https://cdn.jsdelivr.net/eruda/1.2.2/eruda.min.js"></script> -->
+<!-- <script>eruda.init();</script> -->
+<!-- <script charset="UTF-8" src="./sensorsdata.full.js"></script> -->
+<script src="https://static.sensorsdata.cn/sdk/1.26.16/sensorsdata.min.js"></script>
+<!-- <script src="https://cdn.bootcss.com/vConsole/3.15.1/vconsole.min.js"></script> -->
+<script src="https://jssdk.debugbox.sensorsdata.cn/js/zhangyi/vconsole.js"></script>
+<script charset="UTF-8" src="https://jssdk.debugbox.sensorsdata.cn/js/zhangyi/event-session.js"></script>
+<!-- <script charset="UTF-8" src="https://jssdk.debugbox.sensorsdata.cn/js/zhangyi/wechatWebviewChannel.min.js"></script> -->
+<script charset='UTF-8' src="https://jssdk.debugbox.sensorsdata.cn/js/zhangyi/sensors_pop_1.26.16.min.js"></script>
+
+
+<!-- <script charset="UTF-8" type="module"> -->
+<script charset="UTF-8">
+
+const vConsole = new VConsole()
+var sensors = window['sensorsDataAnalytic201505'];
+
+// sensors.login('112233')
+
+  console.log('hello world')
+  sensors.use('SessionEvent');
+sensors.init({
+  server_url: 'https://sdk-product-datasink.sensorsdata.cn/sa?project=default',
+  // server_url: 'https://data02.meipian.cn/server?project=default',
+  // server_url: 'https://horizon_test_8106.debugbox.sensorsdata.cn/sa?project=sacloud',
+    // server_url: 'https://test-daas-sensers1.bmac.com.cn/sa?project=production',
+
+
+  // is_secure_cookie: true,
+  // is_track_single_page:false,
+  // use_client_time:true,
+  // cross_subdomain:false,
+  //或者
+  // batch_send:{
+  //   datasend_timeout: 6000, //一次请求超过多少毫秒的话自动取消，防止请求无响应。
+  //   send_interval: 6000, //间隔多少毫秒发一次数据。
+  //   storage_length: 200 // 存储 localStorage 条数最大值，默认：200 。如 localStorage 条数超过该值，则使用 image 方式立即发送数据。v1.24.8 以上    支持。
+  // },
+  send_type:'beacon',
+  app_js_bridge:true,
+  // app_js_bridge: {
+	// 	white_list: ['https://sdk-product-datasink.sensorsdata.cn/sa?project=default','https://sdk-product-datasink.sensorsdata.cn/sa?project=production']
+	// },
+  heatmap: {
+    //是否开启点击图，default 表示开启，自动采集 $WebClick 事件，可以设置 'not_collect' 表示关闭。
+    clickmap:'not_collect',
+    //是否开启触达图，not_collect 表示关闭，不会自动采集 $WebStay 事件，可以设置 'default' 表示开启。
+    scroll_notice_map:'not_collect',
+    collect_tags: {
+      li: true,
+      img: true,
+      div:true,
+      input:true
+    // ... 其他标签
+    }  ,
+    //此参数针对预置 $WebClick 事件（包括 quick('trackHeatMap') quick('trackAllHeatMap') 触发的）生效。
+	custom_property:function( element_target ){
+		//比如您需要给有 data=test 属性的标签的点击事件增加自定义属性 name:'aa' ，则代码如下：
+		if(element_target.getAttribute('data') === 'test'){
+			return {
+				name:'aa',
+        prop_number: function() {
+          var xx = Math.floor(Math.random()*100+1);
+          console.log("点击随机数为",xx);
+          return xx; // 返回数字
+        },
+			}
+		}
+	},
+  } ,
+  show_log : true,
+  source_channel:['channel'],
+  source_type :{
+    search: ['.baidu.com','.google.'],
+    social: ['.kaixin001.com','//t.co/'],
+    keyword: {baidu:['wd','word','keyword'],sogou:'query'}
+},
+  //子配置项 true 表示采集,false 表示不采集,未设置的参数取默认值。
+  preset_properties: {
+    //是否采集 $latest_utm 最近一次广告系列相关参数，默认值 true。
+    latest_utm:true,
+    //是否采集 $latest_traffic_source_type 最近一次流量来源类型，默认值 true。
+    latest_traffic_source_type:true,
+    //是否采集 $latest_search_keyword 最近一次搜索引擎关键字，默认值 true。
+    latest_search_keyword:true,
+    //是否采集 $latest_referrer 最近一次前向地址，默认值 true。
+    latest_referrer:true,
+    //是否采集 $latest_referrer_host 最近一次前向地址，1.14.8 以下版本默认是true，1.14.8 及以上版本默认是 false，需要手动设置为 true 开启。
+    latest_referrer_host:true,
+    //是否采集 $latest_landing_page 最近一次落地页地址，默认值 false。
+    latest_landing_page:true,
+    //是否采集 $url 页面地址作为公共属性，1.16.5 以下版本默认是 false，1.16.5 及以上版本默认是 true。
+    url: true,
+    //是否采集 $title 页面标题作为公共属性，1.16.5 以下版本默认是 false，1.16.5 及以上版本默认是 true。
+    title: true,
+  }
+});
+// import wechatWebviewChannel from 'https://jssdk.debugbox.sensorsdata.cn/js/zhangyi/wechat-webview-channel.js';
+
+//sensors.use('WechatWebviewChannel');
+// sensors.use(wechatWebviewChannel);
+
+var login_id = Math.floor(Math.random()*100+1)
+sensors.track('before_login',{
+  login_id:login_id
+})
+// sensors.login(login_id)
+
+sensors.track('login',{
+  login_id:login_id
+})
+
+
+
+// 初始化弹框插件
+  // console.log('初始化弹窗------')
+    // sensors.use('Popup', {
+    //    api_base_url: 'https://sc-sfo.xiujiadian.com:8203/api/v2'
+    // });
+
+// import sessionEvent  from 'https://jssdk.debugbox.sensorsdata.cn/js/zhangyi/event-session.js';
+
+
+
+
+// 设置之后，SDK 就会自动收集页面浏览事件，以及设置初始来源。
+sensors.quick('autoTrack');
+sensors.setProfile({email:'xxx@xx'});
+
+sensors.use('PageLeave');
+
+// 监听 visibilitychange 事件
+document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'visible') {
+        console.log('页面可见，-----pageleave测试,时间戳：',new Date().getTime());
+        // 页面变为可见时的处理逻辑
+    } else {
+        console.log('页面隐藏，-----pageleave测试,时间戳：',new Date().getTime());
+        // 页面变为隐藏时的处理逻辑
+    }
+});
+
+
+sensors.use('SensorsChannel');
+sensors.use('SiteLinker',
+    	{
+			linker: [
+      			{part_url: 'sensorsdata.cn', after_hash: false},
+      			{part_url: 'example.com', after_hash: false}
+    		],
+			 // 该配置设置为 true 后，如果从已登录的页面跳转过来，即使当前网页已经登录，当前网页仍然会以之前网页的登录 id 再次登录。
+		 	 re_login: true
+		}
+);
+
+var deeplink = sensors.use('Deeplink',{timeout: 2900});
+document.getElementById('theBtn').addEventListener('click', function(e) {
+      console.log("----执行openDeepLink------");
+       e.preventDefault();
+       deeplink.openDeepLink();
+  }); 
+
+function BuyProduct() {
+  sensors.track("BuyProduct",{
+    city:"zhejiang111",
+    distinct_id01:"12333",
+    test01:"测试测试"
+  });
+  if (typeof navigator.sendBeacon === 'function') {
+  console.log('当前浏览器支持Beacon API');
+} else {
+  console.log('当前浏览器不支持Beacon API');
+}
+  
+  console.log('sensors.getAppStatus()====',sensors.getAppStatus())
+}
+
+
+function login() {
+  let inputText = document.getElementById("01").value
+  sensors.login(inputText)
+ 
+}
+
+</script>
+</html>
