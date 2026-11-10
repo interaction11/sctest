@@ -221,7 +221,7 @@ sensors.use('SiteLinker',
 		}
 );
 
-var deeplink = sensors.use('Deeplink',{timeout: 2900});
+var deeplink = sensors.use('Deeplink',{timeout: 5000});
 document.getElementById('theBtn').addEventListener('click', function(e) {
       console.log("----执行openDeepLink------");
        e.preventDefault();
@@ -299,7 +299,7 @@ function login() {
       };
 
       // 5. 设置超时时间（源码默认 2500ms）
-      dp.timeout = 2500;
+      dp.timeout = 5000;
 
       console.log('--- 开始执行原生 openDeepLink ---');
       
@@ -351,7 +351,7 @@ function login() {
         "url_schemes": "sensordeplink",
         "download_url": "https://appgallery.huawei.com/app/detail?id=com.sdgs.easy.high.speed.hmapp&channelId=SHARE&source=appshare"
       };
-      dp.timeout = 2500;
+      dp.timeout = 5000;
 
       // ==========================================
       // 下面开始高度复刻原版 openDeepLink + handleAndroidLinks 的逻辑
