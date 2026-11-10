@@ -33,11 +33,20 @@
       <a href="sensordeplink://sensorsdata/sd/FcB/eGgumf">打开鸿蒙App02，Scheme形式</a>
 
 	<!-- 在页面的任意位置放置一个按钮用于测试 -->
-	<br><br>
+	<!-- <br><br>
 <button id="testDeepLinkBtn" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
   模拟唤起 App
+</button> -->
+
+	<!-- 原有的按钮 -->
+<button id="testDeepLinkBtn" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+  模拟唤起 App (走原生判断)
 </button>
 
+<!-- 新增的按钮 -->
+<button id="forceHarmonyBtn" style="padding: 10px 20px; background: #d9534f; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">
+  强制模拟鸿蒙唤起 (跳过判断)
+</button>
 
 
 
@@ -308,6 +317,111 @@ function login() {
     document.addEventListener('DOMContentLoaded', bindDeepLinkEvent);
   } else {
     bindDeepLinkEvent();
+  }
+})();
+
+(function () {
+  // 确保 DOM 加载完成后再绑定事件
+  function bindEvents() {
+    var forceBtn = document.getElementById('forceHarmonyBtn');
+    if (!forceBtn) return;
+
+    forceBtn.addEventListener('click', function () {
+      // 1. 获取神策 SDK 和 插件实例
+      var sd = window.sensorsDataAnalytic201505;
+      if (!sd) {
+        console.error('未找到神策 SDK (sensorsDataAnalytic201505)');
+        return;
+      }
+      var dp = sd.modules && sd.modules.Deeplink;
+      if (!dp) {
+        console.error('未找到 DeepLink 插件');
+        return;
+      }
+
+      // 2. 重定向 logger，让你能在控制台清晰看到原版的日志打印
+      dp.logger = function (msg) {
+        console.log('[SensorsDeepLink 强制鸿蒙]', msg);
+      };
+
+      // 3. 确保数据存在 (如果之前执行过其他按钮，这里可以省略赋值，但为了保险重新赋值)
+      if (!dp.data) dp.data = {};
+      dp.data.harmony_info = {
+        "app_linking_url": "https://cdpdata.xlkeji.net/sd/FcB/w/eGgumf",
+        "url_schemes": "sensordeplink",
+        "download_url": "https://appgallery.huawei.com/app/detail?id=com.sdgs.easy.high.speed.hmapp&channelId=SHARE&source=appshare"
+      };
+      dp.timeout = 2500;
+
+      // ==========================================
+      // 下面开始高度复刻原版 openDeepLink + handleAndroidLinks 的逻辑
+      // ==========================================
+      
+      // [原版日志 1]
+      dp.logger('openDeeplink()');
+
+      if (!dp.data) {
+        // [原版日志 2]
+        dp.logger('没有Deep link数据!');
+        return false;
+      }
+
+      // ---- 强行跳过 currentOS 判断，直接执行 harmony 分支逻辑 ----
+
+      if (!dp.data.harmony_info) {
+        dp.logger('没有 harmony_info 数据!');
+        return false;
+      }
+
+      var harURL = dp.data.harmony_info.app_linking_url || dp.data.harmony_info.url_schemes;
+      
+      // [原版日志 3]
+      dp.logger('当前系统是 HarmonyOS');
+
+      // ---- 复刻原版闭包函数 handleAndroidLinks 内部的逻辑 ----
+      
+      // [原版日志 4]
+      dp.logger('尝试唤起 android app');
+      
+      var dest = harURL;
+      // [原版日志 5]
+      dp.logger('唤起APP的地址：' + dest);
+      
+      // 安全清理可能存在的旧定时器
+      if (dp.timer) clearTimeout(dp.timer);
+
+      // 发起跳转 (由于是点击事件触发，不会被浏览器拦截)
+      window.location.href = dest;
+
+      // 兜底定时器
+      dp.timer = setTimeout(function () {
+        // 原版使用了闭包内的 isPageHidden 和 hidden 变量，这里用标准 DOM API 替代
+        var _hidden = 'hidden';
+        if (typeof document.webkitHidden !== 'undefined') _hidden = 'webkitHidden';
+        else if (typeof document.msHidden !== 'undefined') _hidden = 'msHidden';
+        
+        var pageHidden = typeof _hidden !== 'undefined' ? document[_hidden] : false;
+        
+        // [原版日志 6]
+        dp.logger('hide:' + _hidden + ':' + document[_hidden]);
+        
+        if (pageHidden) {
+          // [原版日志 7]
+          dp.logger('The page is hidden, stop navigating to download page');
+          return false;
+        }
+        
+        // [原版日志 8]
+        dp.logger('App可能未安装，跳转到下载地址');
+        window.location.href = dp.data.harmony_info.download_url;
+      }, dp.timeout);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindEvents);
+  } else {
+    bindEvents();
   }
 })();
 
