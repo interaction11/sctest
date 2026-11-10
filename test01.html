@@ -226,6 +226,46 @@ function BuyProduct() {
 }
   
   console.log('sensors.getAppStatus()====',sensors.getAppStatus())
+
+	(function () {
+  // 1. 获取插件实例
+  var dp = window.sensorsDataAnalytic201505.modules.Deeplink;
+
+  // 2. 【关键】将插件原本的 logger 重定向到 console.log，以便直接在控制台看到原始日志
+  dp.logger = function (msg) {
+    console.log("[SensorsDeepLink]", msg);
+  };
+
+  // 3. 构造完整的数据（结合你截图中的 harmony_info，并补全 android 和 ios，防止切换环境报错）
+  dp.data = {
+    "errorMsg": "",
+    "app_key": "FcB",
+    "android_info": {
+      "url_schemes": "sensordeplink",
+      "download_url": "https://appgallery.huawei.com/app/detail?id=com.sdgs.easy.high.speed.hmapp"
+    },
+    "ios_info": {
+      "url_schemes": "sensordeplink",
+      "download_url": "https://apps.apple.com/cn/app/id000000000"
+    },
+    "harmony_info": {
+      "app_linking_url": "https://cdpdata.xlkeji.net/sd/FcB/w/eGgumf",
+      "url_schemes": "sensordeplink",
+      "download_url": "https://appgallery.huawei.com/app/detail?id=com.sdgs.easy.high.speed.hmapp&channelId=SHARE&source=appshare"
+    }
+  };
+
+  // 4. 设置超时时间（默认 2500ms）
+  dp.timeout = 2500;
+
+  // 5. 直接调用原版方法（未做任何重写）
+  console.log("即将执行原版 openDeepLink，当前环境识别的系统为:", dp.$.getOS ? dp.$.getOS() : "未知");
+  
+  dp.openDeepLink();
+})();
+
+
+	
 }
 
 
